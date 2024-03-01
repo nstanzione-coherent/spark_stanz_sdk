@@ -1,5 +1,4 @@
 import requests
-import json
 
 
 ## SET CONSTANTS
@@ -9,9 +8,24 @@ spark_service_version = 'INSERT Service Verison ID'
 tenant = 'INSERT tenant name'
 environment = 'uat.us'
 
+
+## DEFINE VARIABLES 
 url_batch = f"https://excel.{environment}.coherent.global/{tenant}/api/v4/batch"
 
+headers_batch = {
+    'Content-Type': 'application/json',
+    'Authorization': spark_bearer_token
+}
 
+payload_batch = {
+    'service_uri': spark_service, 
+    'version_id': spark_service_version, 
+    'source_system': 'batch_source', 
+    'call_purpose': 'batch_api'
+}
+
+
+## FUNCTIONS
 def create_batch():
     """
     Helper to both create the batch and send input data
@@ -65,35 +79,6 @@ def get_batch_results(batch_id):
     outputs = out['outputs']
     
     return count, outputs, out
-
-
-def add_chunks(batch_id, chunks):
-    """
-    Helper to send chunks
-    Returns api response to be used to validate properly submitted chunk
-    
-    """
-    chunk_url = f'{url_batch}/{batch_id}/chunks'
-    chunk_payload = {
-        'chunks': chunks
-    }
-    chunk_response = requests.post(chunk_url, headers=headers_batch, json=chunk_payload)
-    cr = chunk_response.json()
-    
-    return cr
-
-
-def get_chunk_results(batch_id, max_results: int = 100):
-    """
-    Helper to retrieve chunk results
-    Returns records submitted to be used in downstream functions
-    
-    """
-    chunk_url = f'{url_batch}/{batch_id}/chunksresults?max={max_results}'
-    chunk_response = requests.get(chunk_url, headers=headers_batch)
-    cr = chunk_response.json()
-    
-    return cr
 
 
 def close_batch(batch_id):

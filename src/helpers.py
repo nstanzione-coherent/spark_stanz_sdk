@@ -93,7 +93,7 @@ def calc_cte(array, percentile, tail='left'):
     """
     array.sort()
     if tail == 'left':
-        pct = (1-percentile)
+        pct = (100-percentile)
     else:
         pct = percentile
     index = int(len(array)*(pct/100))
